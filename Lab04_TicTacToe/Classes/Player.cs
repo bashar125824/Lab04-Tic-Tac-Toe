@@ -4,8 +4,8 @@ using System.Text;
 
 namespace Lab04_TicTacToe.Classes
 {
-    class Player
-    {
+	public class Player
+	{
 		public string Name { get; set; }
 		/// <summary>
 		/// P1 is X and P2 will be O
@@ -17,7 +17,11 @@ namespace Lab04_TicTacToe.Classes
 		/// </summary>
 		public bool IsTurn { get; set; }
 
-
+		/// <summary>
+		/// Gets the location from the user 
+		/// </summary>
+		/// <param name="board"></param>
+		/// <returns> a position of the location that the user selected </returns>
 		public Position GetPosition(Board board)
 		{
 			Position desiredCoordinate = null;
@@ -31,7 +35,12 @@ namespace Lab04_TicTacToe.Classes
 
 		}
 
-
+		/// <summary>
+		/// Translates the location the user entered to 
+		/// a location on the GameBoard.
+		/// </summary>
+		/// <param name="position"></param>
+		/// <returns> a position on the GameBoard. </returns>
 		public static Position PositionForNumber(int position)
 		{
 			switch (position)
@@ -50,11 +59,16 @@ namespace Lab04_TicTacToe.Classes
 			}
 		}
 
-	
+		/// <summary>
+		/// Prompts the turn for a player and checks if the position 
+		/// is already occupied, so the current player retake his turn
+		/// to choose another place.
+		/// </summary>
+		/// <param name="board"></param>
 		public void TakeTurn(Board board)
 		{
 			IsTurn = true;
-
+		ChoosePosition:
 			Console.WriteLine($"{Name} it is your turn");
 
 			Position position = GetPosition(board);
@@ -66,6 +80,10 @@ namespace Lab04_TicTacToe.Classes
 			else
 			{
 				Console.WriteLine("This space is already occupied");
+				// Display the board again and give back the turn to 
+				// current player so he can choose again.
+				board.DisplayBoard();
+				goto ChoosePosition;
 			}
 		}
 	}

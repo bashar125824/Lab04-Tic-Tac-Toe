@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading;
 
 namespace Lab04_TicTacToe.Classes
 {
-	class Game
+	public class Game
 	{
+		/// <summary>
+		/// Set player one, player two, winner and the Game Board.
+		/// </summary>
 		public Player PlayerOne { get; set; }
 		public Player PlayerTwo { get; set; }
 		public Player Winner { get; set; }
@@ -26,14 +28,34 @@ namespace Lab04_TicTacToe.Classes
 		}
 
 		/// <summary>
-		/// Activate the Play of the game
+		/// Activates the Play of the game and displays the game board each time 
+		/// a player chooses, then keep switching until the board is full or if a 
+		/// winning board is found. If yes, print a congratulations message with the 
+		/// winner's name and end the game by returning a winner, otherwise return null 
+		/// so it's a tie/draw(will be checked at StartGame method).
 		/// </summary>
-		/// <returns>Winner</returns>
+		/// <returns> Winner or null if there is no winner(tie/draw)</returns>
 		public Player Play()
 		{
+			int counter = 1;
+			Board.DisplayBoard();
+			while (counter < 10)
+			{
+				SwitchPlayer();
+				Player currentPlayer = NextPlayer();
+				currentPlayer.TakeTurn(Board);
+				if (CheckForWinner(Board) == true)
+				{
+					Board.DisplayBoard();
+					Console.WriteLine($"Player {currentPlayer.Name} has won!");
+					return currentPlayer;
+				}
+				Board.DisplayBoard();
+				counter++;
+			}
+			return null;
 
 			//TODO: Complete this method and utilize the rest of the class structure to play the game.
-
 			/*
              * Complete this method by constructing the logic for the actual playing of Tic Tac Toe. 
              * 
@@ -41,91 +63,19 @@ namespace Lab04_TicTacToe.Classes
             1. A turn consists of a player picking a position on the board with their designated marker. 
             2. Display the board after every turn to show the most up to date state of the game
             3. Once a Winner is determined, display the board one final time and return a winner
-
             Few additional hints:
                 Be sure to keep track of the number of turns that have been taken to determine if a draw is required
                 and make sure that the game continues while there are unmarked spots on the board. 
-
             Use any and all pre-existing methods in this program to help construct the method logic. 
              */
-			int player = 1; //By default player 1 is set
-			int choice; //This holds the choice at which position user want to mark
-						// The flag variable checks who has won if it's value is 1 then someone has won the match
-						//if -1 then Match has Draw if 0 then match is still running
-			bool flag = false;
-			char[] arr = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-
-			do
-			{
-				Console.Clear();// whenever loop will be again start then screen will be clear
-				Console.WriteLine("Player1:X and Player2:O");
-				Console.WriteLine("\n");
-				if (player % 2 == 0)//checking the chance of the player
-				{
-					Console.WriteLine("Player 2 Chance");
-				}
-				else
-				{
-					Console.WriteLine("Player 1 Chance");
-				}
-				Console.WriteLine("\n");
-				Board.DisplayBoard();// calling the board Function
-				choice = int.Parse(Console.ReadLine());//Taking users choice
-													   // checking that position where user want to run is marked (with X or O) or not
-				if (arr[choice] != 'X' && arr[choice] != 'O')
-				{
-					if (player % 2 == 0) //if chance is of player 2 then mark O else mark X
-					{
-						arr[choice] = 'O';
-						player++;
-					}
-					else
-					{
-						arr[choice] = 'X';
-						player++;
-					}
-				}
-				else
-				//If there is any possition where user want to run
-				//and that is already marked then show message and load board again
-				{
-					Console.WriteLine("Sorry the row {0} is already marked with {1}", choice, arr[choice]);
-					Console.WriteLine("\n");
-					Console.WriteLine("Please wait 2 second board is loading again.....");
-					Thread.Sleep(2000);
-				}
-				flag = CheckForWinner(Board);// calling of check win
-			}
-			while (flag != true && flag != false);
-			// This loop will be run until all cell of the grid is not marked
-			//with X and O or some player is not win
-			Console.Clear();// clearing the console
-			Board.DisplayBoard();// getting filled board again
-			if (flag == true)
-			// if flag value is 1 then someone has win or
-			//means who played marked last time which has win
-			{
-				Console.WriteLine("Player {0} has won", (player % 2) + 1);
-			}
-			else// if flag value is -1 the match will be draw and no one is winner
-			{
-				Console.WriteLine("Draw");
-			}
-			Console.ReadLine();
-
-			return Winner;
 		}
-	
-		 
 
-
-
-/// <summary>
-/// Check if winner exists
-/// </summary>
-/// <param name="board">current state of the board</param>
-/// <returns>if winner exists</returns>
-public bool CheckForWinner(Board board)
+		/// <summary>
+		/// Check if winner exists
+		/// </summary>
+		/// <param name="board">current state of the board</param>
+		/// <returns>if winner exists</returns>
+		public bool CheckForWinner(Board board)
 		{
 			int[][] winners = new int[][]
 			{
@@ -155,106 +105,45 @@ public bool CheckForWinner(Board board)
 				// TODO:  Determine a winner has been reached. 
 				// return true if a winner has been reached. 
 
-				if (winners[1] == winners[2] && winners[2] == winners[3])
+				// If we have three positions with the same Marker, 
+				//depending on the winning conditions above
+				// true is returned so we have a winner board.
+				if (a == b && a == c)
 				{
 					return true;
 				}
-				//Winning Condition For Second Row
-				else if (winners[4] == winners[5] && winners[5] == winners[6])
-				{
-					return true;
-				}
-				//Winning Condition For Third Row
-				else if (winners[6] == winners[7] && winners[7] == winners[8])
-				{
-					return true;
-				}
-
-                // endregion
-
-
-				// region vertical Winning Condtion
-
-
-				//Winning Condition For First Column
-				else if (winners[1] == winners[4] && winners[4] == winners[7])
-				{
-					return true;
-				}
-				//Winning Condition For Second Column
-				else if (winners[2] == winners[5] && winners[5] == winners[8])
-				{
-					return true;
-				}
-				//Winning Condition For Third Column
-				else if (winners[3] == winners[6] && winners[6] == winners[9])
-				{
-					return true;
-				}
-
-
-				//endregion
-
-
-				//region Diagonal Winning Condition
-
-
-				else if (winners[1] == winners[5] && winners[5] == winners[9])
-				{
-					return true;
-				}
-				else if (winners[3] == winners[5] && winners[5] == winners[7])
-				{
-					return true;
-				}
-
-				//endregion
-
-
-				// region Checking For Draw
-
-
-				// If all the cells or values filled with X or O then any player has won the match
-				
-
 			}
 
 			return false;
-
-
 		}
 
-			/// <summary>
-			/// Determine next player
-			/// </summary>
-			/// <returns>next player</returns>
-			public Player NextPlayer()
+		/// <summary>
+		/// Determine next player
+		/// </summary>
+		/// <returns>next player</returns>
+		public Player NextPlayer()
+		{
+			return (PlayerOne.IsTurn) ? PlayerOne : PlayerTwo;
+		}
+
+		/// <summary>
+		/// End one players turn and activate the other
+		/// </summary>
+		public void SwitchPlayer()
+		{
+			if (PlayerOne.IsTurn)
 			{
-				return (PlayerOne.IsTurn) ? PlayerOne : PlayerTwo;
-			}
 
-			/// <summary>
-			/// End one players turn and activate the other
-			/// </summary>
-			public void SwitchPlayer()
+				PlayerOne.IsTurn = false;
+
+
+				PlayerTwo.IsTurn = true;
+			}
+			else
 			{
-				if (PlayerOne.IsTurn)
-				{
-
-					PlayerOne.IsTurn = false;
-
-
-					PlayerTwo.IsTurn = true;
-				}
-				else
-				{
-					PlayerOne.IsTurn = true;
-					PlayerTwo.IsTurn = false;
-				}
+				PlayerOne.IsTurn = true;
+				PlayerTwo.IsTurn = false;
 			}
-
-
 		}
 	}
-
-
+}
